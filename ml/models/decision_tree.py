@@ -1,14 +1,21 @@
 import numpy as np
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union, Literal
 
 
 class DecisionTree:
     """
-    Decision Tree implementation using RSS (Residual Sum of Squares) for splitting.
-    This implementation is specifically designed for regression problems.
+    Decision Tree that supports both classification and regression tasks.
+    For regression: Uses RSS (Residual Sum of Squares) for splitting
+    For classification: Uses Gini impurity for splitting
     """
 
-    def __init__(self, data: np.ndarray, indices: List[int], depth: int):
+    def __init__(
+        self,
+        data: np.ndarray,
+        indices: List[int],
+        depth: int,
+        task: Literal["regression", "classification"] = "regression",
+    ):
         """
         Initialize and build the decision tree recursively.
 
@@ -16,6 +23,7 @@ class DecisionTree:
             data: Combined features and target array where last column is the target
             indices: List of indices to use from data (supports bootstrap sampling)
             depth: Maximum allowed depth of the tree
+            task: Whether to perform 'regression' or 'classification'
         """
         # Initialize node attributes
         self.leaf = False  # Flag to indicate if node is a leaf
@@ -24,14 +32,18 @@ class DecisionTree:
         self.split = None  # Store splitting value/threshold
         self.L = None  # Left subtree
         self.R = None  # Right subtree
+        self.task = task  # Store task type
+
+        # Get unique values in target variable
+        unique_vals = set(data[indices, -1])
 
         # Case 1: If we've reached maximum depth, make this a leaf node
         if depth == 0:
             self.leaf = True
-            self.prediction = self._avg(data, indices)
+            self.prediction = self._get_prediction(data, indices)
 
         # Case 2: If all samples have same target value, make this a leaf node
-        elif len(set(data[indices, -1])) == 1:
+        elif len(unique_vals) == 1:
             self.leaf = True
             self.prediction = data[indices[0], -1]
 
@@ -41,15 +53,36 @@ class DecisionTree:
             # If splitting fails, make this a leaf node
             if not tree_info:
                 self.leaf = True
-                self.prediction = self._avg(data, indices)
+                self.prediction = self._get_prediction(data, indices)
             # If splitting succeeds, create internal node with left and right children
             else:
                 self.attr, self.split, self.L, self.R = tree_info
+
+    def _get_prediction(
+        self, data: np.ndarray, indices: List[int]
+    ) -> Union[float, int]:
+        """
+        Get prediction based on task type.
+        For regression: returns mean of target values
+        For classification: returns most common class
+
+        Args:
+            data: Full dataset
+            indices: Indices to consider
+        Returns:
+            Predicted value (float for regression, int for classification)
+        """
+        if self.task == "regression":
+            return self._avg(data, indices)
+        else:  # classification
+            values, counts = np.unique(data[indices, -1], return_counts=True)
+            return values[np.argmax(counts)]
 
     @staticmethod
     def _avg(data: np.ndarray, indices: List[int]) -> float:
         """
         Calculate average of target values for given indices.
+        Used for regression task.
 
         Args:
             data: Full dataset
@@ -61,26 +94,32 @@ class DecisionTree:
             return 0.0
         return np.mean(data[indices, -1])
 
-    @staticmethod
-    def _rss(data: np.ndarray, indices: List[int]) -> float:
+    def _calculate_impurity(self, data: np.ndarray, indices: List[int]) -> float:
         """
-        Calculate Residual Sum of Squares (RSS) for given indices.
-        RSS = Σ(y - ȳ)² where ȳ is the mean of y values
+        Calculate impurity measure based on task type.
+        For regression: Uses RSS (Residual Sum of Squares)
+        For classification: Uses Gini impurity
 
         Args:
             data: Full dataset
             indices: Indices to consider
         Returns:
-            RSS value
+            Impurity value
         """
         if not indices:
             return 0.0
-        values = data[indices, -1]
-        return np.sum((values - np.mean(values)) ** 2)
 
-    def _generate(
-        self, data: np.ndarray, indices: List[int], depth: int
-    ) -> Union[Tuple[int, float, "DecisionTree", "DecisionTree"], bool]:
+        if self.task == "regression":
+            # Calculate RSS for regression
+            values = data[indices, -1]
+            return np.sum((values - np.mean(values)) ** 2)
+        else:
+            # Calculate Gini impurity for classification
+            values, counts = np.unique(data[indices, -1], return_counts=True)
+            probabilities = counts / len(indices)
+            return 1 - np.sum(probabilities**2)
+
+    def _generate(self, data: np.ndarray, indices: List[int], depth: int):
         """
         Generate the best split for the current node.
 
@@ -102,9 +141,13 @@ class DecisionTree:
         # Randomly select subset of features to consider (Random Forest modification)
         m = np.random.choice(n_features, int(np.ceil(n_features / 3)), replace=False)
 
-        # Initialize optimal RSS value
-        labels = data[indices, -1]
-        opt = (np.max(labels) - np.min(labels)) ** 2 * len(indices) + 1.0
+        if self.task == "regression":
+            # Initialize optimal RSS value for regression
+            labels = data[indices, -1]
+            opt = (np.max(labels) - np.min(labels)) ** 2 * len(indices) + 1.0
+        else:
+            # Initialize optimal Gini impurity for classification
+            opt = float("inf")
 
         best_split = None
         # Try each selected feature for splitting
@@ -122,8 +165,10 @@ class DecisionTree:
                 if not left_indices or not right_indices:
                     continue
 
-                # Calculate total RSS for this split
-                tmp = self._rss(data, left_indices) + self._rss(data, right_indices)
+                # Calculate total impurity for this split
+                tmp = self._calculate_impurity(
+                    data, left_indices
+                ) + self._calculate_impurity(data, right_indices)
 
                 # Update best split if this split is better
                 if tmp < opt:
@@ -139,18 +184,18 @@ class DecisionTree:
         return (
             attr,
             split,
-            DecisionTree(data, left_indices, depth - 1),
-            DecisionTree(data, right_indices, depth - 1),
+            DecisionTree(data, left_indices, depth - 1, self.task),
+            DecisionTree(data, right_indices, depth - 1, self.task),
         )
 
-    def predict(self, x: np.ndarray) -> float:
+    def predict(self, x: np.ndarray) -> Union[float, int]:
         """
         Predict target value for a single sample.
 
         Args:
             x: Single sample features
         Returns:
-            Predicted value
+            Predicted value (float for regression, int for classification)
         """
         # If leaf node, return stored prediction
         if self.leaf:
