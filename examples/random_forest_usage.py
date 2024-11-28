@@ -1,51 +1,79 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from ml.models.random_forest import RandomForest
 import numpy as np
-from sklearn.datasets import load_boston
+from sklearn.datasets import load_iris, fetch_california_housing
 from sklearn.model_selection import train_test_split
-from ..ml.models.random_forest import RandomForest
 
-# Set random seed for reproducibility
-RANDOM_STATE = 2404
-np.random.seed(RANDOM_STATE)
 
-# Load Boston housing dataset
-boston = load_boston()
-X, y = boston.data, boston.target
+def run_classification_example():
+    print("Starting Classification Example...")  # Debug print
 
-# Split data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=RANDOM_STATE
-)
+    iris = load_iris()
+    X, y = iris.data, iris.target
 
-# Define hyperparameters
-n_trees = 100  # Number of trees in forest
-n_samples = len(X_train)  # Number of training samples
-height = [3, 5, 7]  # Different tree heights to try
-B_range = [10, 50, 100]  # Different numbers of trees to try
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.4, random_state=42, stratify=y
+    )
 
-# Dictionaries to store results
-train_mse_dict = {}
-test_mse_dict = {}
+    n_trees = 10
+    n_samples = len(X_train)
+    B = [
+        np.random.choice(n_samples, int(n_samples * 0.7), replace=True)
+        for _ in range(n_trees)
+    ]
 
-# Try different combinations of height and number of trees
-for h in height:
-    train_mse_dict[h] = []
-    test_mse_dict[h] = []
-    for B in B_range:
-        # Generate bootstrap samples for each tree
-        bootstrap_indices = [
-            np.random.choice(n_samples, n_samples, replace=True) for _ in range(B)
-        ]
+    print("Training Random Forest...")  # Debug print
+    rf = RandomForest(X_train, y_train, B, height=3, task="classification")
 
-        # Create and train random forest
-        rforest = RandomForest(X_train, y_train, bootstrap_indices, h)
+    print("Making predictions...")  # Debug print
+    predictions = rf.predict(X_test)
+    error_rate = rf.get_error(X_test, y_test)
 
-        # Calculate training and testing MSE
-        tr_mse = rforest.get_mse(X_train, y_train)
-        ts_mse = rforest.get_mse(X_test, y_test)
+    print("\nClassification Example Results:")
+    print(f"Dataset size: {len(X_train)} train, {len(X_test)} test")
+    print(f"Number of trees: {n_trees}")
+    print(f"Error Rate: {error_rate:.4f}")
 
-        # Print results
-        print(f"height: {h}, B: {B}\n train MSE: {tr_mse:.4f}\n test MSE: {ts_mse:.4f}")
+    print("\nSample predictions (first 10):")
+    for i in range(min(10, len(y_test))):
+        print(f"True: {y_test[i]}, Predicted: {predictions[i]}")
 
-        # Store results
-        train_mse_dict[h].append(tr_mse)
-        test_mse_dict[h].append(ts_mse)
+
+def run_regression_example():
+    print("\nStarting Regression Example...")  # Debug print
+
+    california = fetch_california_housing()
+    X, y = california.data[:1000], california.target[:1000]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    n_trees = 10
+    n_samples = len(X_train)
+    B = [
+        np.random.choice(n_samples, n_samples // 2, replace=True)
+        for _ in range(n_trees)
+    ]
+
+    print("Training Random Forest...")  # Debug print
+    rf = RandomForest(X_train, y_train, B, height=3, task="regression")
+
+    print("Making predictions...")  # Debug print
+    predictions = rf.predict(X_test)
+    mse = rf.get_error(X_test, y_test)
+
+    print("\nRegression Example Results:")
+    print(f"Dataset size: {len(X_train)} train, {len(X_test)} test")
+    print(f"Number of trees: {n_trees}")
+    print(f"MSE: {mse:.4f}")
+
+
+if __name__ == "__main__":
+    print("Starting examples...")  # Debug print
+    run_classification_example()
+    run_regression_example()
