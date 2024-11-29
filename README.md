@@ -20,6 +20,17 @@ A Python implementation of machine learning algorithms built from scratch using 
     -   Configurable tree height
     -   Error calculation (MSE for regression, Error rate for classification)
 
+    **Hierarchical Clustering**
+
+    -   Agglomerative (bottom-up) clustering approach
+    -   Multiple linkage criteria:
+          - Single linkage (minimum distance)
+          - Complete linkage (maximum distance)
+          - Average linkage (mean distance)
+          - Centroid linkage (distance between centroids)
+    -   Dendrogram visualization support
+    -   Flexible cluster extraction at any level
+
 ## 🛠️ Installation
 
 ```
@@ -64,6 +75,17 @@ Dataset details:
 -   Features: 13 medical attributes (age, sex, chest pain type, blood pressure, etc.)
 -   Target: Binary classification (presence of heart disease)
 -   Size: 303 instances (after cleaning)
+
+### Hierarchical Clustering Example
+
+The `hierarchical_clustering_usage.py` script demonstrates clustering capabilities with dendrogram visualization.
+
+Features demonstrated:
+
+-   Cluster formation with different linkage methods
+-   Dendrogram visualization
+-   Cluster extraction at different levels
+-   Works with any n-dimensional data
 
 ## 🤝 Contributing
 
