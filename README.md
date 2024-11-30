@@ -4,7 +4,16 @@ A Python implementation of machine learning algorithms built from scratch using 
 
 ## 🎯 Models
 
--   **Logistic Regression Implementation**
+    **K-Nearest Neighbors (KNN)**
+
+- Support for any k neighbors
+    - Euclidean distance metric
+    - Classification tasks
+    - Majority voting mechanism
+    - Supports multi-class classification
+    - Includes data scaling recommendations
+
+    **Logistic Regression Implementation**
 
     -   Gradient Descent optimization
     -   Early stopping mechanism
@@ -46,15 +55,21 @@ pip install -r requirements.txt
 
 ## Examples
 
-This directory contains example scripts demonstrating how to use the implemented algorithms.
+This directory contains example scripts demonstrating how to use the implemented algorithms on example datasets
+
+### KNN Example
+
+The `knn_usage.py` script demonstrates the K-Nearest Neighbors implementation with:
+Example outputs:
+
+-   Classification accuracy metrics
+-   Decision boundary plots
+-   Comparison of different k values
+-   Real-time predictions
 
 ### Random Forest Example
 
 The `random_forest_usage.py` script demonstrates both classification and regression tasks using the Random Forest implementation.
-
-```
-python examples/random_forest_usage.py
-```
 
 This will run:
 
