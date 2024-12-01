@@ -4,41 +4,39 @@ A Python implementation of machine learning algorithms built from scratch using 
 
 ## 🎯 Models
 
-    **K-Nearest Neighbors (KNN)**
+        **K-Nearest Neighbors (KNN)**
 
-- Support for any k neighbors
-    - Euclidean distance metric
-    - Classification tasks
-    - Majority voting mechanism
-    - Supports multi-class classification
-    - Includes data scaling recommendations
+        - Euclidean distance metric
+        - Majority voting mechanism
+        - Supports multi-class classification
 
-    **Logistic Regression Implementation**
+        **Logistic Regression Implementation**
 
-    -   Gradient Descent optimization
-    -   Early stopping mechanism
-    -   Lambda regularization
-    -   Configurable learning rates
-    -   Grid search for hyperparameter tuning
+        -   Gradient Descent optimization
+        -   Early stopping mechanism
+        -   Lambda regularization
+        -   Configurable learning rates
 
-    **Random Forest**
+        **Random Forest**
 
-    -   Supports both classification and regression tasks
-    -   Decision tree-based ensemble learning
-    -   Bootstrap aggregating (bagging)
-    -   Configurable tree height
-    -   Error calculation (MSE for regression, Error rate for classification)
+        -   Supports both classification and regression tasks
+        -   Decision tree-based ensemble learning
+        -   Configurable tree height
+        -   Error calculation (MSE for regression, Error rate for classification)
 
-    **Hierarchical Clustering**
+        **Hierarchical Clustering**
 
-    -   Agglomerative (bottom-up) clustering approach
-    -   Multiple linkage criteria:
-          - Single linkage (minimum distance)
-          - Complete linkage (maximum distance)
-          - Average linkage (mean distance)
-          - Centroid linkage (distance between centroids)
-    -   Dendrogram visualization support
-    -   Flexible cluster extraction at any level
+        -   Agglomerative (bottom-up) clustering approach
+        -   Multiple linkage criteria:
+        -   Dendrogram visualization support
+        -   Flexible cluster extraction at any level
+
+        **Principal Component Analysis (PCA)**
+
+        - Data centering and projection
+        - Variance explanation analysis
+        - Dimensionality reduction
+        - Data reconstruction
 
 ## 🛠️ Installation
 

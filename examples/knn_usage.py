@@ -8,7 +8,7 @@ import os
 
 # Add the parent directory to the path to import from ml.models
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from ml.models.KNN import KNN
+from ml.models.knn import KNN
 
 
 def plot_2d_classifier(X, y, classifier, title):
