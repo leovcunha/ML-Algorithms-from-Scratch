@@ -38,6 +38,14 @@ A Python implementation of machine learning algorithms built from scratch using 
         - Dimensionality reduction
         - Data reconstruction
 
+        **Multilayer Perceptron (MLP)**
+
+        - Neural network architecture for supervised learning
+        - Forward and backward propagation with gradient descent
+        - Can be used for binary and multi-class classification
+        - Activation functions: Sigmoid, ReLU, and Softmax
+        - Model training with backpropagation and cost minimization
+
 ## 🛠️ Installation
 
 ```
@@ -99,6 +107,27 @@ Features demonstrated:
 -   Dendrogram visualization
 -   Cluster extraction at different levels
 -   Works with any n-dimensional data
+
+### PCA Example
+
+The `pca_usage.py` script demonstrates the PCA implementation with:
+Example outputs:
+
+-   Original vs reconstructed data visualization
+-   Cumulative explained variance plots
+-   Dimensionality reduction analysis
+-   digit reconstruction examples
+-   Component significance visualization
+
+### MLP Example
+
+The `mlp_usage.py` script demonstrates the MLP implementation with:
+Example outputs:
+
+-   Training and test accuracy reports
+-   Decision boundary visualizations for classification tasks
+-   Cost function (if applicable) and loss trend analysis
+-   Predictions and performance evaluation metrics
 
 ## 🤝 Contributing
 
