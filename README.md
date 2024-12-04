@@ -38,6 +38,14 @@ A Python implementation of machine learning algorithms built from scratch using 
         - Dimensionality reduction
         - Data reconstruction
 
+        **Support Vector Machine (SVM)**
+
+        - Binary classification using maximum margin hyperplane
+        - Sequential Minimal Optimization (SMO) for training
+        - Kernel functions for non-linear classification
+        - Support for both linear and Gaussian (RBF) kernels
+        - Regularization parameter C for controlling margin softness
+
         **Multilayer Perceptron (MLP)**
 
         - Neural network architecture for supervised learning
@@ -118,6 +126,14 @@ Example outputs:
 -   Dimensionality reduction analysis
 -   digit reconstruction examples
 -   Component significance visualization
+
+### SVM Example
+
+The `svm_usage.py` script demonstrates the SVM implementation with:
+
+-   Data preprocessing and feature scaling
+-   Model training with linear kernel
+-   Performance metrics and classification reports
 
 ### MLP Example
 
