@@ -14,53 +14,55 @@ class SVM:
         self.kernel_function = None
 
     def train(self, X, y, kernel_function):
-        # Setup initial variables
-        m, n = X.shape  # m = number of examples, n = number of features
-        self.alphas = np.zeros(m)  # Lagrange multipliers, initially all zero
-        self.b = 0  # bias term
-        E = np.zeros(m)  # Error cache
-        passes = 0  # Count of passes through the dataset
+        """
+        Trains an SVM classifier using simplified SMO algorithm.
+        """
+        self.kernel_function = kernel_function
+        m, n = X.shape
 
-        # Convert labels from 0/1 to -1/+1 for SVM mathematics
+        # Initialize variables
+        self.alphas = np.zeros(m)
+        self.b = 0
+        E = np.zeros(m)
+        passes = 0
+
+        # Map 0 to -1
         y = np.where(y == 0, -1, y)
 
-        # Pre-compute kernel matrix for efficiency
-        K = np.zeros((m, m))
-        for i in range(m):
-            for j in range(i, m):
-                K[i, j] = kernel_function(X[i, :], X[j, :])
-                K[j, i] = K[i, j]  # Kernel matrix is symmetric
-
-        # Main training loop
-        while passes < self.max_passes:
-            num_changed_alphas = 0  # Track if we made any updates in this pass
-
-            # Loop through all training examples
+        # Pre-compute Kernel Matrix
+        if kernel_function.__name__ == "linear_kernel":
+            K = np.dot(X, X.T)
+        elif "gaussian_kernel" in kernel_function.__name__:
+            X2 = np.sum(X**2, axis=1)
+            K = X2.reshape(-1, 1) + X2 - 2 * np.dot(X, X.T)
+            K = np.exp(-K)
+        else:
+            K = np.zeros((m, m))
             for i in range(m):
-                # Calculate error for example i
-                # E[i] = f(x_i) - y_i where f(x_i) is the current SVM output
+                for j in range(i, m):
+                    K[i, j] = kernel_function(X[i, :], X[j, :])
+                    K[j, i] = K[i, j]
+
+        print("\nTraining ...")
+        dots = 12
+        while passes < self.max_passes:
+            num_changed_alphas = 0
+            for i in range(m):
                 E[i] = self.b + np.sum(self.alphas * y * K[:, i]) - y[i]
 
-                # Check if example i violates KKT conditions
-                # This is where we select examples that need updating
                 if (y[i] * E[i] < -self.tol and self.alphas[i] < self.C) or (
                     y[i] * E[i] > self.tol and self.alphas[i] > 0
                 ):
 
-                    # Select second example j randomly
-                    j = np.random.randint(0, m)
+                    j = i
                     while j == i:
                         j = np.random.randint(0, m)
 
-                    # Calculate error for example j
                     E[j] = self.b + np.sum(self.alphas * y * K[:, j]) - y[j]
 
-                    # Save old alpha values
                     alpha_i_old = self.alphas[i]
                     alpha_j_old = self.alphas[j]
 
-                    # Calculate bounds L and H
-                    # These ensure alphas stay between 0 and C
                     if y[i] == y[j]:
                         L = max(0, self.alphas[j] + self.alphas[i] - self.C)
                         H = min(self.C, self.alphas[j] + self.alphas[i])
@@ -71,27 +73,22 @@ class SVM:
                     if L == H:
                         continue
 
-                    # Calculate eta (the second derivative of the objective)
                     eta = 2 * K[i, j] - K[i, i] - K[j, j]
                     if eta >= 0:
                         continue
 
-                    # Update alpha_j
-                    self.alphas[j] -= (y[j] * (E[i] - E[j])) / eta
-
-                    # Clip alpha_j to be between L and H
+                    self.alphas[j] = self.alphas[j] - (y[j] * (E[i] - E[j])) / eta
                     self.alphas[j] = min(H, self.alphas[j])
                     self.alphas[j] = max(L, self.alphas[j])
 
-                    # If alpha_j didn't move enough, continue to next example
                     if abs(self.alphas[j] - alpha_j_old) < self.tol:
                         self.alphas[j] = alpha_j_old
                         continue
 
-                    # Update alpha_i based on alpha_j's update
-                    self.alphas[i] += y[i] * y[j] * (alpha_j_old - self.alphas[j])
+                    self.alphas[i] = self.alphas[i] + y[i] * y[j] * (
+                        alpha_j_old - self.alphas[j]
+                    )
 
-                    # Update threshold b
                     b1 = (
                         self.b
                         - E[i]
@@ -106,7 +103,6 @@ class SVM:
                         - y[j] * (self.alphas[j] - alpha_j_old) * K[j, j]
                     )
 
-                    # Set new threshold
                     if 0 < self.alphas[i] < self.C:
                         self.b = b1
                     elif 0 < self.alphas[j] < self.C:
@@ -116,11 +112,30 @@ class SVM:
 
                     num_changed_alphas += 1
 
-            # Update passes count
             if num_changed_alphas == 0:
-                passes += 1  # No updates made, increment passes
+                passes += 1
             else:
-                passes = 0  # Updates made, reset passes count
+                passes = 0
+
+            print(".", end="", flush=True)
+            dots += 1
+            if dots > 78:
+                dots = 0
+                print()
+
+        print(" Done!\n")
+
+        # Save the model
+        idx = self.alphas > 0
+        self.X = X[idx]
+        self.y = y[idx]
+        self.alphas = self.alphas[idx]
+
+        # Fix for the weight calculation
+        if kernel_function.__name__ == "linear_kernel":
+            self.w = np.zeros(n)
+            for i in range(len(self.alphas)):
+                self.w += self.alphas[i] * self.y[i] * self.X[i]
 
     def predict(self, X):
         if self.kernel_function.__name__ == "linear_kernel":
