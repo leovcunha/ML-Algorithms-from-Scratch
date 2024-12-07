@@ -44,6 +44,9 @@ pytest
 
 The `knn_usage.py` script demonstrates the K-Nearest Neighbors implementation with decision boundary plots comparing different k values for synthetic and Iris dataset.
 
+<img src="data/image.png" alt="Description" width="400" style="display: block; margin: auto;">
+<br/>
+
 **Logistic Regression**
 
 -   Gradient Descent optimization
@@ -73,6 +76,9 @@ The `random_forest_usage.py` script demonstrates both classification (using the 
 
 The `hierarchical_clustering_usage.py` script demonstrates clustering capabilities with dendrogram visualization.
 
+<img src="data/image-1.png" alt="Description" width="400" style="display: block; margin: auto;">
+<br/>
+
 **Principal Component Analysis (PCA)**
 
 -   Data centering and projection
@@ -80,7 +86,10 @@ The `hierarchical_clustering_usage.py` script demonstrates clustering capabiliti
 -   Dimensionality reduction
 -   Data reconstruction
 
-The `pca_usage.py` script demonstrates the PCA implementation with MNIST dataset featuring Original vs reconstructed data visualization and cumulative explained variance plots
+The `pca_usage.py` script demonstrates the PCA implementation with MNIST dataset featuring Original vs reconstructed data visualization and cumulative explained variance plots.
+
+<img src="data/image-2.png" alt="Description" width="400" style="display: block; margin: auto;">
+<br/>
 
 **Support Vector Machine (SVM)**
 
@@ -101,6 +110,9 @@ The `svm_usage.py` script demonstrates the SVM implementation with data preproce
 -   Model training with backpropagation and cost minimization
 
 The `mlp_usage.py` script demonstrates the MLP implementation with training and test accuracy reports, decision boundary visualizations for classification tasks, predictions and performance evaluation metrics with a synthetic dataset.
+
+<img src="data/image-3.png" alt="Description" width="400" style="display: block; margin: auto;">
+<br/>
 
 ## 🤝 Contributing
 
