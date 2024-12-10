@@ -10,7 +10,7 @@ Dependencies: See requirements.txt
 
 ### Installation:
 
-```
+```bash
 # Clone the repository
 git clone https://github.com/yourusername/ml-algorithms-from-scratch.git
 
@@ -21,7 +21,7 @@ cd ml-algorithms-from-scratch
 pip install -r requirements.txt
 ```
 
-### Run All Tests
+## Run All Tests
 
 ```bash
 pytest
@@ -112,6 +112,28 @@ The `svm_usage.py` script demonstrates the SVM implementation with data preproce
 The `mlp_usage.py` script demonstrates the MLP implementation with training and test accuracy reports, decision boundary visualizations for classification tasks, predictions and performance evaluation metrics with a synthetic dataset.
 
 <img src="data/image-3.png" alt="Description" width="400" style="display: block; margin: auto;">
+<br/>
+
+**K-Means Clustering**
+
+-   Iterative algorithm
+-   Minimizes the sum of squared distances between points and cluster centers
+-   Supports various distance metrics (Euclidean, Manhattan)
+-   Flexible number of clusters
+
+The `k_means_clustering_usage.py` script demonstrates clustering capabilities with visualizations.
+
+<br/>
+
+**Naive Bayes**
+
+-   Probabilistic classifier based on Bayes' theorem
+-   Assumes feature independence
+-   Supports Gaussian, Multinomial, and Bernoulli distributions
+-   Suitable for high-dimensional data
+
+The `naive_bayes_usage.py` script demonstrates the Naive Bayes implementation with the Spambase dataset.
+
 <br/>
 
 ## 🤝 Contributing
